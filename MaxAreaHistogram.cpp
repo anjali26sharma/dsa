@@ -2,80 +2,87 @@
 #include <stack>
 #include <vector>
 #include <bits/stdc++.h>
-#include <algorithm>
 using namespace std;
-vector<int> NsrIndex(int *arr, int n)
+vector<int> NSL(int arr[], int n)
 {
-    stack<pair<int, int>> s;
-    vector<int> v;
-    for (int i = n - 1; i >= 0; i--)
-    {
-        if (s.size() == 0)
-            v.push_back(n);
-        else if (s.size() > 0 && s.top().first < arr[i])
-            v.push_back(s.top().second);
-        else if (s.size() > 0 && s.top().first >= arr[i])
-        {
-            while (s.size() > 0 && s.top().first >= arr[i])
-                s.pop();
-            if (s.size() == 0)
-                v.push_back(n);
-            else if (s.top().first < arr[i])
-                v.push_back(s.top().second);
-        }
-        s.push({arr[i], i});
-    }
-
-    reverse(v.begin(), v.end());
-    return v;
-}
-
-vector<int> NslIndex(int *arr, int n)
-{
-    stack<pair<int, int>> s;
-    vector<int> v;
+    stack<pair<int, int>> s1;
+    vector<int> l;
     for (int i = 0; i < n; i++)
     {
-        if (s.size() == 0)
-            v.push_back(-1);
-        else if (s.size() > 0 && s.top().first < arr[i])
-            v.push_back(s.top().second);
-        else if (s.size() > 0 && s.top().first >= arr[i])
+        if (s1.size() == 0)
+            l.push_back(-1);
+        else if (s1.size() > 0 && s1.top().first < arr[i])
+            l.push_back(s1.top().second);
+        else if (s1.size() > 0 && s1.top().first >= arr[i])
         {
-            while (s.size() > 0 && s.top().first >= arr[i])
-                s.pop();
-            if (s.size() == 0)
-                v.push_back(-1);
-            else if (s.top().first < arr[i])
-                v.push_back(s.top().second);
+            while (s1.size() > 0 && s1.top().first >= arr[i])
+                s1.pop();
+            if (s1.size() == 0)
+                l.push_back(-1);
+            else if (s1.top().first < arr[i])
+                l.push_back(s1.top().second);
         }
-        s.push({arr[i], i});
+        s1.push({arr[i], i});
     }
-    return v;
+    return l;
 }
-
-int main()
+vector<int> NSR(int arr[], int n)
 {
-    int n, maxArea = 0;
-    cin >> n;
-    int *arr = new int[n];
-    for (int i = 0; i < n; i++)
-        cin >> arr[i];
-    vector<int> NSR = NsrIndex(arr, n);
-    vector<int> NSL = NslIndex(arr, n);
+    vector<int> r;
+    stack<pair<int, int>> s2;
+    for (int i = n; i >= 0; i--)
+    {
+        if (s2.size() == 0)
+            r.push_back(n);
+        else if (s2.size() > 0 && s2.top().first < arr[i])
+            r.push_back(s2.top().second);
+        else if (s2.size() > 0 && s2.top().first >= arr[i])
+        {
+            while (s2.size() > 0 && s2.top().first >= arr[i])
+                s2.pop();
+            if (s2.size() == 0)
+                r.push_back(n);
+            else if (s2.top().first < arr[i])
+                r.push_back(s2.top().second);
+        }
+        s2.push({arr[i], i});
+    }
+    reverse(r.begin(), r.end());
+    return r;
+}
+int MAH(int arr[], int n)
+{
     int width[n];
     int area[n];
+    int max = 0;
+    vector<int> l;
+    vector<int> r;
+    l = NSL(arr, n);
+    r = NSR(arr, n);
+    for (int i = 0; i < n; i++)
+    {
+        width[i] = r[i] - l[i] - 1;
+    }
 
     for (int i = 0; i < n; i++)
     {
-        width[i] = NSR[i] - NSL[i] - 1;
         area[i] = width[i] * arr[i];
     }
-    for (int i = 0; i < n; i++)
+
+    max = area[0];
+    for (int i = 1; i < n; i++)
     {
-        if (area[i] > maxArea)
-            maxArea = area[i];
+        if (area[i] > max)
+            max = area[i];
     }
-    cout << maxArea << endl;
-    return 0;
+    return max;
+}
+int main()
+{
+    int n;
+    cin >> n;
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        cin >> arr[i];
+    cout << MAH(arr, n);
 }
